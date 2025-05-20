@@ -1,4 +1,6 @@
-# WeatherWise-Sanjana-Bayeero
+# WeatherWise-Sanjana-Bayeeroo
+WEATHERWISE USER INSTRUCTION GUIDE 
+
 Step 1- Run the App
 Make sure all required packages are installed. Then launch the application using:python weatherwise.py
 Or if you're using a Jupyter Notebook/Colab, run all the cells in order
