@@ -1,1 +1,2 @@
-# WeatherWise-Sanjana-Bayeeroo
+# WeatherWise-Sanjana-Bayeero
+Step 1 
