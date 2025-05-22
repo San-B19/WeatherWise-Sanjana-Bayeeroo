@@ -1,0 +1,165 @@
+WeatherWise: Before and After Comparison
+
+1. Weather data retrieval function
+Before:  def get_weather_data(city):
+    import requests
+    url = f"http://api.openweathermap.org/data/2.5/forecast?q={city}&appid=API_KEY&units=metric"
+    response = requests.get(url)
+    return response.json()
+
+
+Basic functionality: fetches forecast by city name
+No geolocation accuracy
+Lacks error handling, time zone or location fallback 
+
+
+After: def get_weather_data(location):
+    api_key = os.environ.get("OPENWEATHER_API_KEY")
+    geocode_location = geolocator.geocode(location)
+    lat, lon = geocode_location.latitude, geocode_location.longitude
+    url = f"http://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={api_key}&units=metric"
+    response = requests.get(url, timeout=10)
+    weather_data = response.json()
+    weather_data['city_name_geocoded'] = geocode_location.address
+    return weather_data, None
+
+Uses geopy for location coordinates (more accurate)
+Uses latitude/longitude in API request
+Adds full error handling and fallback names
+Supports environment-based API key setup
+
+2. Forecast Query Parser
+Before: def parse_forecast_details(query):
+    if "rain" in query:
+        return "rain"
+    elif "temp" in query:
+        return "temperature"
+    return None
+
+Simple keyword match
+No support for multiple weather attributes or date
+Not extensible or flexible
+
+After: def parse_forecast_details(query):
+    q_lower = query.lower()
+    if "today" in q_lower: date_spec = "today"
+    elif "tomorrow" in q_lower: date_spec = "tomorrow"
+    elif "weekend" in q_lower: date_spec = "weekend"
+
+    keywords = {
+        "temperature": ["temperature", "temp", "hot", "cold"],
+        "rain": ["rain", "umbrella"],
+        "humidity": ["humidity", "humid"],
+        "wind": ["wind", "breeze"],
+        "condition": ["weather", "forecast"],
+        "sunrise_sunset": ["sunrise", "sunset"]
+    }
+
+    for key, words in keywords.items():
+        for word in words:
+            if word in q_lower:
+                attribute = key
+                break
+
+    return {"date_spec": date_spec, "attribute": attribute}
+
+Extracts both weather attribute and date
+Handles flexible phrases
+Easily expandable for more keywords
+
+3. Weather summary generator
+Before: def respond_to_query(attribute, forecast):
+    return f"The {attribute} is {forecast[attribute]}"
+
+Returns basic forecast info
+Lacks natural language
+No emojis, no context, no sunrise/sunset or fallback behaviour
+
+
+After: def generate_weather_response(parsed_details, weather_data):
+    # Handles date, time, emoji, condition, temp, wind, humidity, rain/snow
+    # Handles sunrise/sunset if attribute is present
+    return "☀️ For Rose-Hill tomorrow: It will be partly cloudy with a temperature around 27°C. Humidity will be 70%. Wind speeds around 4 m/s."
+
+Human-like rich descriptions 
+Dynamically includes emojis based on condition
+Includes "feels like", wind, humidity, sunrise/sunset
+Fallbacks when data is missing or vague
+
+
+4. Visualisation (charts)
+
+Before
+Not implemented.
+
+No graphical forecast
+
+After: def create_temperature_visualisation(df, city_name):
+    plt.plot(df.index, df['temperature'], marker='o')
+    plt.title(f"5-Day Temperature Forecast for {city_name}")
+
+def create_precipitation_visualisation(df, city_name):
+    df['precipitation_3h'] = df['rain_3h'] + df['snow_3h']
+    plt.bar(df.index, df['precipitation_3h'])
+
+
+5-day temperature line chart
+5-day precipitation bar chart (rain + snow)
+Automatically updates based on location
+
+
+5. Interactive chat loop interact
+
+Before: city = input("Enter city:")
+data = get_weather_data(city)
+print(data)
+
+Minimal  input/output
+No parsing or smart querying
+Not interactive or user-friendly
+
+After: def main():
+    while True:
+        location_query = pyip.inputStr("Which city?")
+        weather_data, error = get_weather_data(location_query)
+        query = pyip.inputStr("What do you want to know?")
+        parsed = parse_forecast_details(query)
+        response = generate_weather_response(parsed, weather_data)
+        print(response)
+
+        if pyip.inputYesNo("Do you want charts?") == "yes":
+            df = prepare_viz_data(weather_data)
+            create_temperature_visualisation(df, city_name)
+            create_precipitation_visualisation(df, city_name)
+
+Conversational structure with clear prompts
+Parses user input for intent
+Offers visualisation optionally
+Graceful error handling and exit option
+
+
+
+My Analysis of the Initial Code:-
+The initial code had multiple functional and usability problems:
+Location recognition only worked for major cities; small towns failed.
+No geolocation fallback or address standardization.
+Natural language queries like "How hot is it tomorrow?" were not parsed correctly.
+The same temperature data was mistakenly used for both temperature and precipitation visualisations.
+Visualisation charts were not distinct or styled properly.
+The user interaction was one-off, not conversational or guided.
+No error handling for invalid city names, API failures, or missing forecast keys.
+
+
+Why My Prompting Strategy Was Effective:-
+My strategy was effective because:
+I didn't just ask for improvements - 1 diagnosed real-world issues (e.g., city mismatches, chart duplication).
+I specified new features like sunrise/sunset, emoji feedback, and geolocation accuracy.
+I requested specific fixes like distinct visuals, error handling, and input validation.
+I guided the Al step-by-step to modularise, improve, and document the functions meaningfully.
+As a result, the final version:
+Recognises any global location with geopy
+Parses natural language into weather actions
+Generates friendly and clear responses
+Displays distinct, meaningful visualisations
+Offers an interactive, intelligent assistant experience
+

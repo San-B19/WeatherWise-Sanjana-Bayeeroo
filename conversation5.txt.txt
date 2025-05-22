@@ -1,0 +1,24 @@
+conversation5.txt
+AI Conversation Folder Instructions
+Me:
+I want to make my app interactive. It should ask the user for a location, then what kind of weather info they want, and finally respond with both text and chart. Can we build this loop?
+
+AI:
+Absolutely! You can use pyinputplus for better input handling. Here's how you could structure your main() loop:
+
+import pyinputplus as pyip
+
+def main():
+    print("Welcome to WeatherWise!")
+    while True:
+        location = pyip.inputStr("Enter a location (or type 'exit' to quit): ")
+        if location.lower() == "exit":
+            break
+        weather_data, error = get_weather_data(location)
+        if error:
+            print("Error:", error)
+            continue
+        query = pyip.inputStr("What do you want to know? (e.g., temperature tomorrow): ")
+        parsed = parse_forecast_details(query)
+        response = generate_weather_response(parsed, weather_data)
+        print(response)

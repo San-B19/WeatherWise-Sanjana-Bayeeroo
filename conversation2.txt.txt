@@ -1,0 +1,23 @@
+conversation2.txt
+AI Conversation Folder Instructions
+
+Prompt 2 — Improving Location Accuracy
+
+Me:
+Now I want the weather forecast to work with any location name, even small towns. Can we convert the city name into coordinates first?
+
+AI:
+Yes, to improve accuracy, it's better to geocode the location name into latitude and longitude. You can use geopy with Nominatim to do this. Here's how you can integrate geolocation into your weather function:
+
+from geopy.geocoders import Nominatim
+
+geolocator = Nominatim(user_agent="weather_app")
+
+def get_coordinates(location_name):
+    location = geolocator.geocode(location_name)
+    if location:
+        return location.latitude, location.longitude
+    return None, None
+
+url = f"http://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={api_key}&units=metric"
+
