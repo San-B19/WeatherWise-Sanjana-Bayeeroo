@@ -1,0 +1,20 @@
+AI Conversation Folder Instructions
+
+Tool: ChatGPT
+Date: 17-05-2025
+Prompt 1 — Initial Function Design 
+
+Me:
+Hi, I want to create a Python function that gets a 5-day weather forecast from OpenWeatherMap. Can you help me start with that?
+
+AI:
+Sure! To get started, you'll need to use the OpenWeatherMap API and make a request to the 5-day forecast endpoint. Here's a basic function to get the weather data using a city name:
+
+```python
+import requests
+
+def get_weather_data(city, api_key):
+    url = f"http://api.openweathermap.org/data/2.5/forecast?q={city}&appid={api_key}&units=metric"
+    response = requests.get(url)
+    data = response.json()
+    return data
