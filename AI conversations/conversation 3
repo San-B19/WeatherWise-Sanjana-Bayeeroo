@@ -1,0 +1,23 @@
+Me:
+I want my app to accept natural language queries like “Is it going to rain tomorrow in Paris?” Can you help me extract useful parts like the date and weather type?
+
+AI:
+Yes! You can use a simple keyword-based parser using regular expressions to detect keywords like "tomorrow", "rain", "temperature", etc. Here's an example:
+
+import re
+
+def parse_forecast_details(query):
+    date_spec = None
+    attribute = None
+
+    if "today" in query.lower():
+        date_spec = "today"
+    elif "tomorrow" in query.lower():
+        date_spec = "tomorrow"
+
+    if "rain" in query.lower():
+        attribute = "rain"
+    elif "temperature" in query.lower():
+        attribute = "temperature"
+
+    return {"date_spec": date_spec, "attribute": attribute}
